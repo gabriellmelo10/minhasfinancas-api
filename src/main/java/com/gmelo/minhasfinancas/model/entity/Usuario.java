@@ -2,7 +2,12 @@ package com.gmelo.minhasfinancas.model.entity;
 
 import javax.persistence.*;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
 
 @Entity
 @Table( name = "usuario" , schema = "financas")
@@ -23,7 +28,7 @@ public class Usuario {
 	@Column(name = "email")
 	private String email;
 	
-	@Column(name = "senha")
+	@Column(name = "senha")	
 	private String senha;
 
 }
