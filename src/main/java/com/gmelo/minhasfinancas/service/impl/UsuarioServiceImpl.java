@@ -2,6 +2,9 @@ package com.gmelo.minhasfinancas.service.impl;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import com.gmelo.minhasfinancas.exception.ErroAutenticacao;
 import com.gmelo.minhasfinancas.exception.RegraNegocioException;
 import com.gmelo.minhasfinancas.model.entity.Usuario;
 import com.gmelo.minhasfinancas.model.repository.UsuarioRepository;
@@ -19,14 +22,27 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Usuario autenticar(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Usuario> usuario = repository.findByEmail(email);
+		
+		if(!usuario.isPresent()) {
+			throw new ErroAutenticacao("Usuário não encontrado para o email informado.");
+		}
+		
+		//boolean senhasBatem = encoder.matches(senha, usuario.get().getSenha());
+		
+		//if(!senhasBatem) {
+		if(!usuario.get().getSenha().equals(senha)) {
+			throw new ErroAutenticacao("Senha inválida.");
+		}
+
+		return usuario.get();
 	}
 
 	@Override
+	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		this.validarEmail(usuario.getEmail());
+		return repository.save(usuario);
 	}
 
 	@Override
