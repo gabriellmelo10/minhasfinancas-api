@@ -4,12 +4,15 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.stereotype.Service;
+
 import com.gmelo.minhasfinancas.exception.ErroAutenticacao;
 import com.gmelo.minhasfinancas.exception.RegraNegocioException;
 import com.gmelo.minhasfinancas.model.entity.Usuario;
 import com.gmelo.minhasfinancas.model.repository.UsuarioRepository;
 import com.gmelo.minhasfinancas.service.UsuarioService;
 
+@Service
 public class UsuarioServiceImpl implements UsuarioService {
 	
 	private UsuarioRepository repository;
