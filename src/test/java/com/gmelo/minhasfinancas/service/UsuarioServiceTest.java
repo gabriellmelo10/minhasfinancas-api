@@ -19,8 +19,6 @@ import com.gmelo.minhasfinancas.model.entity.Usuario;
 import com.gmelo.minhasfinancas.model.repository.UsuarioRepository;
 import com.gmelo.minhasfinancas.service.impl.UsuarioServiceImpl;
 
-
-
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class UsuarioServiceTest {
