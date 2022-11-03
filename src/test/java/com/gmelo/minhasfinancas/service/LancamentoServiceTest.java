@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +60,60 @@ public class LancamentoServiceTest {
 		//execucao e verificacao
 		catchThrowableOfType( () -> service.salvar(lancamentoASalvar), RegraNegocioException.class );
 		verify(repository, never()).save(lancamentoASalvar);
+	}
+	
+	@Test
+	public void deveAtualizarUmLancamento() {
+		//cenário
+		Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
+		lancamentoSalvo.setId(1l);
+		lancamentoSalvo.setStatus(StatusLancamento.PENDENTE);
+
+		doNothing().when(service).validar(lancamentoSalvo);
+		
+		when(repository.save(lancamentoSalvo)).thenReturn(lancamentoSalvo);
+		
+		//execucao
+		service.atualizar(lancamentoSalvo);
+		
+		//verificação
+		verify(repository, times(1)).save(lancamentoSalvo);
+		
+	}
+	
+	@Test
+	public void deveLancarErroAoTentarAtualizarUmLancamentoQueAindaNaoFoiSalvo() {
+		//cenário
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		
+		//execucao e verificacao
+		catchThrowableOfType( () -> service.atualizar(lancamento), NullPointerException.class );
+		verify(repository, never()).save(lancamento);
+	}
+	
+	@Test
+	public void deveDeletarUmLancamento() {
+		//cenário
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		lancamento.setId(1l);
+		
+		//execucao
+		service.deletar(lancamento);
+		
+		//verificacao
+		verify( repository ).delete(lancamento);
+	}
+	
+	@Test
+	public void deveLancarErroAoTentarDeletarUmLancamentoQueAindaNaoFoiSalvo() {
+		//cenário
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		
+		//execucao
+		catchThrowableOfType( () -> service.deletar(lancamento), NullPointerException.class );
+		
+		//verificacao
+		verify( repository, never() ).delete(lancamento);
 	}	
 
 }
