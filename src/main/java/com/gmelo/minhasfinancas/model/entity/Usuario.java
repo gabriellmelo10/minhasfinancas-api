@@ -31,7 +31,7 @@ public class Usuario {
 	private String email;
 	
 	@Column(name = "senha")
-	@JsonIgnore
+//	@JsonIgnore
 	private String senha;
 
 }
