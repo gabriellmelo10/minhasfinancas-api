@@ -1,5 +1,6 @@
 package com.gmelo.minhasfinancas.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,9 +10,20 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.gmelo.minhasfinancas.api.JwtTokenFilter;
+import com.gmelo.minhasfinancas.service.JwtService;
+import com.gmelo.minhasfinancas.service.impl.SecurityUserDetailsService;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+	
+	@Autowired
+	private SecurityUserDetailsService userDetailsService;
+	
+	@Autowired
+	private JwtService jwtService;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -19,15 +31,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return encoder;
 	}
 	
+	@Bean
+	public JwtTokenFilter jwtTokenFilter() {
+		return new JwtTokenFilter(jwtService, userDetailsService);
+	}
+	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		String senhaCodificada = passwordEncoder().encode("qwe123");
-		
 		auth
-			.inMemoryAuthentication()
-			.withUser("usuario")
-			.password(senhaCodificada)
-			.roles("USER");
+			.userDetailsService(userDetailsService)
+			.passwordEncoder(this.passwordEncoder());
 	}
 	
 	@Override
@@ -41,8 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.and()
 				//nao guarda sessao de usuario em cookies
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			
 			.and()
-				.httpBasic();
+				.addFilterBefore( jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class )
+				;
 	}
 }
